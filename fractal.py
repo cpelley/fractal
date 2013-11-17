@@ -177,7 +177,7 @@ def midpoint_sd(size, scale=0.5, random_corner=True):
         ndarray grid representing a heightmap.
 
     """
-    if np.log2(size[0] - 1) % 2:
+    if not np.log2(size[0] - 1).is_integer():
         raise ValueError('Grid size {} not allowed, 2**n + 1 accepted where '
             'n in Z'.format(size[0]))
     if size[0] != size[1]:

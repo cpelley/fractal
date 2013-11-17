@@ -8,7 +8,7 @@ def window_views(xsize=3, ysize=3, xstep=1, ystep=1):
     """
     Generate view ndarray of the grid.
 
-    Args:
+    Kwargs:
 
     * xsize (int):
         Window dim-0 size.
@@ -109,6 +109,12 @@ def square_det(xstep, ystep, step_x, step_y, size, wrap=True):
     * step_y (int):
         y Location of our point with respect to the entire grid.
 
+    Kwargs:
+    
+    * wrap (bool):
+        Performs wrap-around for neighbours on the grid edge if True.  Default
+        is to wrap-around.
+
     Returns:
         x index ndarray and y index ndarray representing the location of each
         surrounding point in the grid.
@@ -156,6 +162,9 @@ def midpoint_sd(size, scale=0.5, random_corner=True):
         size_0, size_1 = (2**s + 1), (2**s + 1) where 's' is the number of
         iterations.  Rearranging for s = log_2(size_x - 1).  The dimension of
         the grid must be equal and must abide by, 2**n + 1 where n in Z.
+
+    Kwargs:
+
     * scale (float):
         Determines the scale of the resulting terrain.  This value has no
         impact on the behaviour of the algorithm.

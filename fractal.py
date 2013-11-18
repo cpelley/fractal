@@ -1,7 +1,13 @@
 import numpy as np
 import numpy.lib.stride_tricks as stride
 import mpl_toolkits.mplot3d
-import matplotlib.pyplot as plt
+PLOT_UTIL = None
+try:
+    from mayavi import mlab
+    PLOT_UTIL = 'maya'
+except ImportError:
+    import matplotlib.pyplot as plt
+    PLOT_UTIL = 'matplotlib'
 
 
 def window_views(xsize=3, ysize=3, xstep=1, ystep=1):
@@ -69,16 +75,19 @@ def subdivide_grid(iteration, size):
     return xsize, ysize, xstep, ystep
 
 
-def perturbation(constant):
+def perturbation(constant, length=None):
     """
     Provides a random number in the range [-constant, +constant].
 
     Args:
 
-    * constant (float)
+    * constant (float):
+        Defines the random value range.
+    * length (int)
+        Number of random numbers to return.
 
     Returns:
-    Random number in the range [-constant, +constant].
+    ndarray of random numbers in the range [-constant, +constant].
 
     """
     return np.random.rand() * 2 * constant - constant
@@ -110,7 +119,7 @@ def square_det(xstep, ystep, step_x, step_y, size, wrap=True):
         y Location of our point with respect to the entire grid.
 
     Kwargs:
-    
+
     * wrap (bool):
         Performs wrap-around for neighbours on the grid edge if True.  Default
         is to wrap-around.
@@ -189,7 +198,7 @@ def midpoint_sd(size, scale=0.5, random_corner=True):
     if random_corner:
         corner_x = np.array([0, 0, -1, -1])
         corner_y = np.array([0, -1, -1, 0])
-        grid[corner_x, corner_y] = np.random.rand(4) * scale
+        grid[corner_x, corner_y] = perturbation(scale, 4)
 
     iterations = (
         np.log2(size[0] - 1).astype(int), np.log2(size[1] - 1).astype(int))
@@ -226,7 +235,7 @@ def midpoint_sd(size, scale=0.5, random_corner=True):
                                  perturbation(scale))
 
         # Update perturbation constant.
-        scale /= 2.  # *= np.power(2, -1.)
+        scale *= np.power(2, -1.)
 
         print 'iteration: {} of {} completed'.format(
             iteration + 1, iterations[0])
@@ -262,14 +271,24 @@ def plot_grid(grid):
     ax2 = fig.add_subplot(122)
     mesh = ax2.pcolormesh(grid)
     plt.colorbar(mesh)
+    plt.show()
+
+
+def maya_plot(grid):
+    mlab.figure(size=(800, 600), bgcolor=(0.16, 0.28, 0.46))
+    mlab.surf(grid, colormap='gist_earth', vmin=0, warp_scale="auto")
+    mlab.show()
+
+
+PLOT_FUNCTION = {'maya':  maya_plot,
+                 'matplotlib': plot_grid}
 
 
 if __name__ == '__main__':
     size = ((257, 257), (65, 65), (33, 33), (17, 17), (5, 5), (3, 3))
-    size = size[1]
+    size = size[0]
 
     np.random.seed(0)
 
     grid = midpoint_sd(size)
-    plot_grid(grid)
-    plt.show()
+    PLOT_FUNCTION[PLOT_UTIL](grid)

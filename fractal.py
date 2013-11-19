@@ -272,7 +272,7 @@ def midpoint_sd(size, scale=0.5, roughness=1.0, random_corner=True):
 
 def plot_grid(grid):
     """
-    Simple plotting wrapper for plotting our resulting heightmap grid.
+    Simple plotting wrapper for plotting with matplotlib.
 
     Resulting 3D wireframe automatically determines suitable z-limits based on
     value ranges.
@@ -300,6 +300,20 @@ def plot_grid(grid):
 
 
 def maya_plot(grid):
+    """
+    Simple plotting wrapper for plotting with mayavi.
+
+    Surface plot has colours and scale for heightmap visualisation.
+
+    Args:
+
+    * grid (:class:`numpy.array`):
+        A grid representing a heightmap.
+
+    Returns:
+        None
+
+    """
     mlab.figure(size=(800, 600), bgcolor=(0.16, 0.28, 0.46))
     mlab.surf(grid, colormap='gist_earth', vmin=0, warp_scale="auto")
     mlab.show()

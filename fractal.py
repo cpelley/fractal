@@ -21,12 +21,12 @@
 # SOFTWARE.
 import numpy as np
 import numpy.lib.stride_tricks as stride
-import mpl_toolkits.mplot3d
 PLOT_UTIL = None
 try:
     from mayavi import mlab
-    PLOT_UTIL = 'maya'
+    PLOT_UTIL = 'mayavi'
 except ImportError:
+    import mpl_toolkits.mplot3d
     import matplotlib.pyplot as plt
     PLOT_UTIL = 'matplotlib'
 
@@ -177,7 +177,7 @@ def square_det(xstep, ystep, step_x, step_y, size, wrap=True):
     return center_y, center_x
 
 
-def midpoint_sd(size, scale=0.5, random_corner=True):
+def midpoint_sd(size, scale=0.5, roughness=1.0, random_corner=True):
     """
     Midpoint displacement algorithm.
 
@@ -198,6 +198,10 @@ def midpoint_sd(size, scale=0.5, random_corner=True):
     * scale (float):
         Determines the scale of the resulting terrain.  This value has no
         impact on the behaviour of the algorithm.
+    * roughtness (float):
+        Roughness constant which determines the roughness of the resulting
+        heightmap.  With high value (r >> 1), terrain will exhibit 'rough'
+        terrain, while a low value << 1, the terrain will be smooth.
     * random_corder (bool):
         Specifies whether grid corner points are initialised at 0 (False) or
         populated with random values (True).  By default grid corner points are
@@ -239,8 +243,8 @@ def midpoint_sd(size, scale=0.5, random_corner=True):
                                      step_y - ystep,
                                      step_y - ystep])
 
-                grid[step_x, step_y] = (grid[center_y, center_x].mean() +
-                                       perturbation(scale))
+                grid[step_y, step_x] = (grid[center_y, center_x].mean() +
+                                        perturbation(scale))
 
         # Square step.
         for step_x in xrange(xstep, size[0], (xstep) * 2):
@@ -253,7 +257,7 @@ def midpoint_sd(size, scale=0.5, random_corner=True):
                     center_in_y, center_in_x = square_det(
                         xstep, ystep, x, y, size, wrap=False)
                     grid[y, x] = (grid[center_in_y, center_in_x].mean() +
-                                 perturbation(scale))
+                                  perturbation(scale))
 
         # Update perturbation constant.
         scale *= np.power(2, -1.)
@@ -301,7 +305,7 @@ def maya_plot(grid):
     mlab.show()
 
 
-PLOT_FUNCTION = {'maya':  maya_plot,
+PLOT_FUNCTION = {'mayavi':  maya_plot,
                  'matplotlib': plot_grid}
 
 

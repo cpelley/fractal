@@ -31,41 +31,6 @@ except ImportError:
     PLOT_UTIL = 'matplotlib'
 
 
-def window_views(xsize=3, ysize=3, xstep=1, ystep=1):
-    """
-    Generate view ndarray of the grid.
-
-    Kwargs:
-
-    * xsize (int):
-        Window dim-0 size.
-    * ysize (int):
-        Window dim-1 size.
-    * xstep (int):
-        Window dim-0 step, corresponding to window center.
-    * ystep(int):
-        Window dim-1 step, corresponding to window center.
-
-    Returns:
-        Numpy ndarray which represents a view of the grid.
-
-    .. note::
-
-    This function is not currently in use.
-
-    """
-    strides = (grid.strides[0] * xstep,
-               grid.strides[1] * ystep,
-               grid.strides[0],
-               grid.strides[1])
-    window = (((grid.shape[0] - 1) / (xsize - 1)),
-              ((grid.shape[1] - 1) / (ysize - 1)),
-              xsize,
-              ysize)
-    all_windows = stride.as_strided(grid, window, strides)
-    return all_windows
-
-
 def subdivide_grid(iteration, size):
     """
     Determine step size from subdivision number.
